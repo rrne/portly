@@ -4,6 +4,12 @@
 
 "3000번 포트 누가 물고 있지?", "어제 띄운 서버가 안 죽었나?" — 매번 `lsof` 치는 대신, 메뉴바 아이콘 클릭 한 번으로 지금 포트를 쓰는 프로세스를 보고 정리하세요.
 
+<p align="center">
+  <a href="https://github.com/rrne/portly/releases/latest/download/Portal_0.1.0_aarch64.dmg">
+    <img src="https://img.shields.io/badge/⬇%20Download-Portal%20v0.1.0%20(.dmg)-2ea44f?style=for-the-badge" alt="Download Portal">
+  </a>
+</p>
+
 ## 기능
 
 - **한눈에 보기** — 포트를 쓰는 프로세스를 메뉴바 팝오버에 표시
@@ -17,7 +23,7 @@
 
 ### 다운로드 (권장)
 
-1. [Releases](../../releases)에서 최신 `Portal_x.y.z_aarch64.dmg` 다운로드
+1. **[⬇ Portal v0.1.0 다운로드 (.dmg)](https://github.com/rrne/portly/releases/latest/download/Portal_0.1.0_aarch64.dmg)** — Apple Silicon(M1 이상) 전용
 2. `.dmg`를 열고 `Portal`을 `Applications`로 드래그
 3. 첫 실행 시 **우클릭 → 열기** (미서명 앱이라 macOS가 한 번 확인함)
 
