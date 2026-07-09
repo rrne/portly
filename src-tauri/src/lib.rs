@@ -53,14 +53,14 @@ pub fn run() {
 
             // 우클릭 메뉴 — 종료 수단.
             use tauri::menu::{MenuBuilder, MenuItemBuilder};
-            let quit = MenuItemBuilder::with_id("quit", "Portal 종료").build(app)?;
+            let quit = MenuItemBuilder::with_id("quit", "Portly 종료").build(app)?;
             let menu = MenuBuilder::new(app).item(&quit).build()?;
 
             let _tray = TrayIconBuilder::with_id("main")
                 .icon(tray_icon)
                 // 단색 실루엣 아이콘이라 template 켬 → macOS가 다크/라이트에 맞춰 자동 반전.
                 .icon_as_template(true)
-                .tooltip("Portal")
+                .tooltip("Portly")
                 .menu(&menu)
                 // 좌클릭은 창 토글, 우클릭만 메뉴가 뜨게.
                 .show_menu_on_left_click(false)
@@ -115,5 +115,5 @@ pub fn run() {
             config::save_config
         ])
         .run(tauri::generate_context!())
-        .expect("error while running Portal");
+        .expect("error while running Portly");
 }

@@ -1,4 +1,4 @@
-// Portal 설정 — ~/.portal/config.json 에 저장/로드. 얇게: 파일 I/O만.
+// Portly 설정 — ~/.portly/config.json 에 저장/로드. 얇게: 파일 I/O만.
 
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf};
@@ -13,7 +13,7 @@ pub struct Config {
 
 fn config_path() -> Result<PathBuf, String> {
     let home = dirs::home_dir().ok_or("홈 디렉토리를 찾을 수 없음")?;
-    let dir = home.join(".portal");
+    let dir = home.join(".portly");
     fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     Ok(dir.join("config.json"))
 }

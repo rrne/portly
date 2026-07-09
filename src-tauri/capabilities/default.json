@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Portal main window — 창 show/hide/position 제어 및 이벤트",
+  "description": "Portly main window — 창 show/hide/position 제어 및 이벤트",
   "windows": ["main"],
   "permissions": [
     "core:default",

@@ -146,7 +146,7 @@ function App() {
   return (
     <div className="popover">
       <header className="popover__header">
-        <span className="popover__title">Portal</span>
+        <span className="popover__title">Portly</span>
         <span className="popover__hint">
           {loading ? "스캔 중…" : `${procs.length}개`}
         </span>
