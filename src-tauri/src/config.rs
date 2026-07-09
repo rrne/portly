@@ -37,8 +37,48 @@ pub fn load_config() -> Result<Config, String> {
 }
 
 #[tauri::command]
-pub fn save_config(config: Config) -> Result<(), String> {
+pub fn save_config(mut config: Config) -> Result<(), String> {
+    // ── 신뢰 경계 방어: project_roots를 무검증 저장하면 안 된다. ──
+    // 잘못된 값(빈 문자열, "/", 상대경로 등)이 들어가면 필터가 무력화되거나
+    // ("/"를 넣으면 모든 프로세스가 "내 dev"로 분류돼 노이즈 폭발) 오작동한다.
+    config.project_roots = sanitize_roots(config.project_roots)?;
+
     let path = config_path()?;
     let json = serde_json::to_string_pretty(&config).map_err(|e| e.to_string())?;
     fs::write(&path, json).map_err(|e| e.to_string())
+}
+
+/// project_roots 검증: 존재하는 절대경로 디렉토리만, 위험한 최상위 루트는 거부, 중복 제거.
+fn sanitize_roots(roots: Vec<String>) -> Result<Vec<String>, String> {
+    use std::collections::BTreeSet;
+    use std::path::Path;
+
+    // 필터를 무의미하게 만드는(=사실상 전체) 경로는 거부한다.
+    const FORBIDDEN: &[&str] = &["/", "/Users", "/System", "/Library", "/private"];
+
+    let mut seen = BTreeSet::new();
+    let mut out = Vec::new();
+    for raw in roots {
+        let trimmed = raw.trim().trim_end_matches('/');
+        if trimmed.is_empty() {
+            continue; // 빈 값 무시
+        }
+        let p = Path::new(trimmed);
+        if !p.is_absolute() {
+            return Err(format!("절대경로만 지정할 수 있습니다: {raw}"));
+        }
+        if FORBIDDEN.contains(&trimmed) {
+            return Err(format!(
+                "너무 넓은 경로는 지정할 수 없습니다(필터가 무의미해짐): {raw}"
+            ));
+        }
+        if !p.is_dir() {
+            return Err(format!("존재하는 폴더가 아닙니다: {raw}"));
+        }
+        // 중복 제거(정규화된 경로 기준)
+        if seen.insert(trimmed.to_string()) {
+            out.push(trimmed.to_string());
+        }
+    }
+    Ok(out)
 }

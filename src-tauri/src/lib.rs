@@ -3,9 +3,12 @@
 // 설계 원칙: Rust는 얇게(OS 호출/트레이만), 로직은 프론트(React/TS)에서.
 
 mod config;
+mod detect;
 mod kill;
 mod model;
+mod registry;
 mod scan;
+mod spawn;
 
 use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -112,7 +115,13 @@ pub fn run() {
             kill::kill_pid,
             config::home_dir,
             config::load_config,
-            config::save_config
+            config::save_config,
+            detect::detect_command,
+            registry::list_projects,
+            registry::save_project,
+            registry::delete_project,
+            spawn::start_app,
+            spawn::tail_log
         ])
         .run(tauri::generate_context!())
         .expect("error while running Portly");

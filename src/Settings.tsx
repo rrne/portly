@@ -5,14 +5,24 @@ export function Settings({
   roots,
   onChange,
   onClose,
+  suppressHide,
 }: {
   home: string;
   roots: string[];
   onChange: (next: string[]) => void;
   onClose: () => void;
+  suppressHide: React.MutableRefObject<boolean>;
 }) {
   const addRoot = async () => {
-    const picked = await open({ directory: true, multiple: false });
+    suppressHide.current = true; // 다이얼로그 중 팝오버가 숨지 않게
+    let picked: string | string[] | null = null;
+    try {
+      picked = await open({ directory: true, multiple: false });
+    } finally {
+      setTimeout(() => {
+        suppressHide.current = false;
+      }, 300);
+    }
     if (typeof picked === "string" && !roots.includes(picked)) {
       onChange([...roots, picked]);
     }

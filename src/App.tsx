@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   homeDir,
   killPid,
   loadConfig,
+  openPort,
   processMeta,
   saveConfig,
   scanPorts,
@@ -13,6 +14,7 @@ import { toFriendly } from "./friendly";
 import type { DecoratedProcess, PortProcess, ProcessMeta } from "./types";
 import { Settings } from "./Settings";
 import { DetailModal } from "./DetailModal";
+import { Projects } from "./Projects";
 import "./App.css";
 
 function App() {
@@ -30,6 +32,10 @@ function App() {
   // 필터 기준: 홈 경로 + 사용자가 지정한 프로젝트 루트들
   const [home, setHome] = useState("");
   const [roots, setRoots] = useState<string[]>([]);
+
+  // OS 다이얼로그(폴더 선택)가 열려 있는 동안엔 "포커스 잃으면 hide"를 억제한다.
+  // (다이얼로그가 포커스를 가져가면 팝오버가 숨어버려 다이얼로그까지 닫히는 충돌 방지)
+  const suppressHide = useRef(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -105,7 +111,7 @@ function App() {
     const win = getCurrentWindow();
     const unlisten = win.onFocusChanged(({ payload: focused }) => {
       if (focused) refresh();
-      else win.hide();
+      else if (!suppressHide.current) win.hide(); // 다이얼로그 중엔 숨기지 않음
     });
     refresh();
     return () => {
@@ -173,10 +179,20 @@ function App() {
           roots={roots}
           onChange={persistRoots}
           onClose={() => setShowSettings(false)}
+          suppressHide={suppressHide}
         />
       )}
 
       <main className="popover__body">
+        <Projects
+          suppressHide={suppressHide}
+          onToast={(msg) => {
+            setToast(msg);
+            // 서버 실행 직후 목록에 반영되도록 잠깐 뒤 재스캔
+            setTimeout(refresh, 1500);
+          }}
+        />
+
         {error && <div className="state state--error">{error}</div>}
         {isEmpty && (
           <div className="state">
@@ -195,6 +211,7 @@ function App() {
                 killing={killing === p.pid}
                 onKill={onKill}
                 onDetail={setDetailFor}
+                onOpen={openPort}
               />
             ))}
           </Section>
@@ -218,6 +235,7 @@ function App() {
               killing={killing === p.pid}
               onKill={onKill}
               onDetail={setDetailFor}
+              onOpen={openPort}
             />
           ))}
 
@@ -286,6 +304,7 @@ function ProcessRow({
   killing,
   onKill,
   onDetail,
+  onOpen,
 }: {
   p: DecoratedProcess;
   dim?: boolean;
@@ -293,6 +312,7 @@ function ProcessRow({
   killing?: boolean;
   onKill?: (p: DecoratedProcess, risk: Risk) => void;
   onDetail?: (p: DecoratedProcess) => void;
+  onOpen?: (port: number) => void;
 }) {
   const title = p.label || p.command;
   const subtitle = p.framework
@@ -342,6 +362,15 @@ function ProcessRow({
           {p.label ? subtitle : `pid ${p.pid} · ${p.user} · ${p.protocol}`}
         </span>
       </div>
+      {onOpen && p.port > 0 && p.protocol === "TCP" && (
+        <button
+          className="row__open"
+          onClick={() => onOpen(p.port)}
+          title={`http://localhost:${p.port} 브라우저로 열기`}
+        >
+          열기
+        </button>
+      )}
       {onKill && (
         <button
           className={`row__kill ${risk !== "none" ? "row__kill--risky" : ""}`}

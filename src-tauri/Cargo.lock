@@ -2537,6 +2537,7 @@ name = "portal"
 version = "0.1.0"
 dependencies = [
  "dirs 5.0.1",
+ "libc",
  "serde",
  "serde_json",
  "tauri",
