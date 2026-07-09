@@ -1,6 +1,6 @@
 [package]
 name = "portal"
-version = "0.1.0"
+version = "0.2.0"
 description = "로컬 포트 관제탑 & 런처 — 포트를 쓰는 프로세스를 메뉴바에서 보고 kill/start"
 authors = ["coco"]
 edition = "2021"

@@ -5,13 +5,15 @@
 "3000번 포트 누가 물고 있지?", "어제 띄운 서버가 안 죽었나?" — 매번 `lsof` 치는 대신, 메뉴바 아이콘 클릭 한 번으로 지금 포트를 쓰는 프로세스를 보고 정리하세요.
 
 <p align="center">
-  <a href="https://github.com/rrne/portly/releases/latest/download/Portly_0.1.0_universal.dmg">
-    <img src="https://img.shields.io/badge/⬇%20Download-Portly%20v0.1.0%20(.dmg)-2ea44f?style=for-the-badge" alt="Download Portly">
+  <a href="https://github.com/rrne/portly/releases/latest/download/Portly_0.2.0_universal.dmg">
+    <img src="https://img.shields.io/badge/⬇%20Download-Portly%20v0.2.0%20(.dmg)-2ea44f?style=for-the-badge" alt="Download Portly">
   </a>
 </p>
 
 ## 기능
 
+- **프로젝트 실행** — 폴더를 등록하면 ▶ 버튼으로 dev 서버 실행. 폴더의 lock 파일을 읽어 `pnpm dev`/`npm run dev` 등 **명령을 자동 감지**
+- **브라우저 열기** — 각 포트 행의 "열기"로 `localhost:포트`를 기본 브라우저에서 바로
 - **한눈에 보기** — 포트를 쓰는 프로세스를 메뉴바 팝오버에 표시
 - **똑똑한 분류** — `내 dev 서버` / `기타` / `시스템`으로 자동 그룹, 내 프로젝트만 위에
 - **사람이 읽는 이름** — `node` 대신 `my-app (Vite)`처럼 폴더명·프레임워크로 표시
@@ -23,7 +25,7 @@
 
 ### 다운로드 (권장)
 
-1. **[⬇ Portly v0.1.0 다운로드 (.dmg)](https://github.com/rrne/portly/releases/latest/download/Portly_0.1.0_universal.dmg)** — Intel·Apple Silicon 모두 지원
+1. **[⬇ Portly v0.2.0 다운로드 (.dmg)](https://github.com/rrne/portly/releases/latest/download/Portly_0.2.0_universal.dmg)** — Intel·Apple Silicon 모두 지원
 2. `.dmg`를 열고 `Portly`를 `Applications`로 드래그
 3. 첫 실행 시 **우클릭 → 열기** (미서명 앱이라 macOS가 한 번 확인함)
 
