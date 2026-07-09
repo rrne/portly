@@ -362,25 +362,27 @@ function ProcessRow({
           {p.label ? subtitle : `pid ${p.pid} · ${p.user} · ${p.protocol}`}
         </span>
       </div>
-      {onOpen && p.port > 0 && p.protocol === "TCP" && (
-        <button
-          className="row__open"
-          onClick={() => onOpen(p.port)}
-          title={`http://localhost:${p.port} 브라우저로 열기`}
-        >
-          열기
-        </button>
-      )}
-      {onKill && (
-        <button
-          className={`row__kill ${risk !== "none" ? "row__kill--risky" : ""}`}
-          onClick={() => onKill(p, risk)}
-          disabled={killing}
-          title={riskLabel || `포트 ${p.port} 종료 (SIGTERM)`}
-        >
-          {killing ? "…" : "종료"}
-        </button>
-      )}
+      <div className="row__actions">
+        {onOpen && p.port > 0 && p.protocol === "TCP" && (
+          <button
+            className="row__open"
+            onClick={() => onOpen(p.port)}
+            title={`http://localhost:${p.port} 브라우저로 열기`}
+          >
+            열기
+          </button>
+        )}
+        {onKill && (
+          <button
+            className={`row__kill ${risk !== "none" ? "row__kill--risky" : ""}`}
+            onClick={() => onKill(p, risk)}
+            disabled={killing}
+            title={riskLabel || `포트 ${p.port} 종료 (SIGTERM)`}
+          >
+            {killing ? "…" : "종료"}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

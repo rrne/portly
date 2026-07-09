@@ -571,7 +571,16 @@ body {
   color: var(--fg);
 }
 
-/* 열기 버튼 — hover 시 나타남 (kill 옆) */
+/* 액션 그룹 — 열기·종료를 행 오른쪽 끝에 일정 간격으로 모은다 */
+.row__actions {
+  flex-shrink: 0;
+  margin-left: auto; /* 항상 오른쪽 끝 정렬(이름 길이와 무관하게 일정) */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 열기 버튼 — hover 시 나타남 */
 .row__open {
   flex-shrink: 0;
   border: none;
@@ -598,7 +607,6 @@ body {
 /* kill 버튼 — 평소엔 숨었다가 행 hover 시 나타남 */
 .row__kill {
   flex-shrink: 0;
-  margin-left: auto;
   border: none;
   background: transparent;
   color: #d9534f;
