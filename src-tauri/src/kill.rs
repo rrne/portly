@@ -3,8 +3,10 @@
 use std::process::Command;
 
 /// pid를 종료한다. force=false면 SIGTERM(정상 종료), true면 SIGKILL(강제).
+/// expected_command: 스캔 때 본 프로세스 이름(command). 넘기면 kill 직전에
+/// 지금 그 pid의 이름과 대조해, pid가 재활용된 경우 엉뚱한 프로세스를 죽이지 않는다.
 #[tauri::command]
-pub fn kill_pid(pid: i32, force: bool) -> Result<(), String> {
+pub fn kill_pid(pid: i32, force: bool, expected_command: Option<String>) -> Result<(), String> {
     // ── 신뢰 경계 방어: pid를 무비판 실행하면 안 된다. ──
     // kill은 음수 인자를 "프로세스 그룹"으로 해석한다. 예: `kill -9 -1`은
     // 내 권한의 모든 프로세스를 죽여 세션을 붕괴시킨다.
@@ -14,6 +16,23 @@ pub fn kill_pid(pid: i32, force: bool) -> Result<(), String> {
         return Err(format!(
             "종료 거부: PID {pid}는 유효하지 않거나 시스템 필수 프로세스입니다."
         ));
+    }
+
+    // ── PID 재사용 방어 ──
+    // 스캔~클릭 사이에 그 pid가 죽고 다른 프로세스가 그 번호를 차지했을 수 있다.
+    // 지금 pid의 이름을 다시 읽어, 스캔 때 본 이름과 다르면 종료를 거부한다.
+    if let Some(expected) = expected_command.as_deref() {
+        match current_command(pid) {
+            None => {
+                return Err(format!("PID {pid}는 이미 종료되었습니다."));
+            }
+            Some(now) if now != expected => {
+                return Err(format!(
+                    "종료 거부: PID {pid}가 그새 다른 프로세스({now})로 바뀌었습니다. 새로고침 후 다시 시도하세요."
+                ));
+            }
+            _ => {}
+        }
     }
 
     let signal = if force { "-9" } else { "-15" }; // SIGKILL / SIGTERM
@@ -35,4 +54,28 @@ pub fn kill_pid(pid: i32, force: bool) -> Result<(), String> {
     } else {
         format!("종료 실패: {}", err.trim())
     })
+}
+
+/// pid의 현재 프로세스명(lsof COMMAND와 같은 comm). 없으면 None(=이미 죽음).
+/// scan.rs의 lsof COMMAND는 `ps -o comm`의 basename과 같은 값이다.
+fn current_command(pid: i32) -> Option<String> {
+    let out = Command::new("ps")
+        .args(["-p", &pid.to_string(), "-o", "comm="])
+        .output()
+        .ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    let text = String::from_utf8_lossy(&out.stdout);
+    let line = text.trim();
+    if line.is_empty() {
+        return None;
+    }
+    // ps comm=은 풀 경로(/usr/bin/node)를 줄 수 있으니 basename만.
+    Some(
+        line.rsplit('/')
+            .next()
+            .unwrap_or(line)
+            .to_string(),
+    )
 }

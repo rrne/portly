@@ -74,6 +74,9 @@ pub fn process_meta(pids: Vec<i32>) -> Result<Vec<ProcessMeta>, String> {
         .map_err(|e| format!("ps 실행 실패: {e}"))?;
     let ps_text = String::from_utf8_lossy(&ps_out.stdout);
 
+    // 2) cwd는 전체 pid를 lsof 한 번에 배치 조회 (N번 호출 → 1번)
+    let cwd_map = cwds_of(&pids);
+
     let mut result = Vec::new();
     for line in ps_text.lines() {
         let line = line.trim_start();
@@ -84,8 +87,7 @@ pub fn process_meta(pids: Vec<i32>) -> Result<Vec<ProcessMeta>, String> {
         let Ok(pid) = pid_str.trim().parse::<i32>() else {
             continue;
         };
-        // 2) cwd는 pid별로 lsof (dev 그룹은 대개 몇 개뿐)
-        let cwd = cwd_of(pid).unwrap_or_default();
+        let cwd = cwd_map.get(&pid).cloned().unwrap_or_default();
         result.push(ProcessMeta {
             pid,
             cwd,
@@ -93,6 +95,39 @@ pub fn process_meta(pids: Vec<i32>) -> Result<Vec<ProcessMeta>, String> {
         });
     }
     Ok(result)
+}
+
+/// 여러 pid의 cwd를 lsof 한 번에 배치 조회한다. `lsof -a -p 1,2,3 -d cwd -Fpn`
+/// -Fpn 출력은 `p<pid>` 줄 뒤에 `n<경로>` 줄이 따라온다.
+fn cwds_of(pids: &[i32]) -> std::collections::HashMap<i32, String> {
+    use std::collections::HashMap;
+    let mut map = HashMap::new();
+    if pids.is_empty() {
+        return map;
+    }
+    let pid_csv = pids
+        .iter()
+        .map(|p| p.to_string())
+        .collect::<Vec<_>>()
+        .join(",");
+    let Ok(out) = Command::new("lsof")
+        .args(["-a", "-p", &pid_csv, "-d", "cwd", "-Fpn"])
+        .output()
+    else {
+        return map;
+    };
+    let text = String::from_utf8_lossy(&out.stdout);
+    let mut cur: Option<i32> = None;
+    for line in text.lines() {
+        if let Some(rest) = line.strip_prefix('p') {
+            cur = rest.trim().parse::<i32>().ok();
+        } else if let Some(path) = line.strip_prefix('n') {
+            if let Some(pid) = cur {
+                map.insert(pid, path.to_string());
+            }
+        }
+    }
+    map
 }
 
 /// pid 하나의 상세 정보(메모리, 풀 명령, cwd)를 뽑는다. 상세 모달용.

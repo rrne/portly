@@ -95,7 +95,7 @@ function App() {
       setKilling(p.pid);
       setToast(null);
       try {
-        await killPid(p.pid, false); // SIGTERM
+        await killPid(p.pid, p.command, false); // SIGTERM + PID 재사용 방어
         setToast(`${p.label || p.command} (${p.port}) 종료됨`);
       } catch (e) {
         setToast(String(e));

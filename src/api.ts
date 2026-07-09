@@ -17,9 +17,9 @@ export const processMeta = (pids: number[]) =>
 export const processDetail = (pid: number) =>
   invoke<ProcessDetail>("process_detail", { pid });
 
-/** pid를 종료한다. force=true면 SIGKILL(강제). */
-export const killPid = (pid: number, force = false) =>
-  invoke<void>("kill_pid", { pid, force });
+/** pid를 종료한다. expectedCommand로 PID 재사용을 방어한다. force=true면 SIGKILL. */
+export const killPid = (pid: number, expectedCommand: string, force = false) =>
+  invoke<void>("kill_pid", { pid, force, expectedCommand });
 
 // ── 설정 ──
 export interface Config {
