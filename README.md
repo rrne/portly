@@ -5,8 +5,8 @@
 떠 있는 서버를 클릭 한 번에 종료하고, 등록해둔 프로젝트는 ▶ 버튼으로 바로 실행합니다. 터미널에서 `lsof`/`kill` 치던 일을 메뉴바에서.
 
 <p align="center">
-  <a href="https://github.com/rrne/portly/releases/latest/download/Portly_0.2.0_universal.dmg">
-    <img src="https://img.shields.io/badge/⬇%20Download-Portly%20v0.2.0%20(.dmg)-2ea44f?style=for-the-badge" alt="Download Portly">
+  <a href="https://github.com/rrne/portly/releases/latest/download/Portly_0.2.1_universal.dmg">
+    <img src="https://img.shields.io/badge/⬇%20Download-Portly%20v0.2.1%20(.dmg)-2ea44f?style=for-the-badge" alt="Download Portly">
   </a>
 </p>
 
@@ -30,7 +30,7 @@
 
 ### 다운로드 (권장)
 
-1. **[⬇ Portly v0.2.0 다운로드 (.dmg)](https://github.com/rrne/portly/releases/latest/download/Portly_0.2.0_universal.dmg)** — Intel·Apple Silicon 모두 지원
+1. **[⬇ Portly v0.2.1 다운로드 (.dmg)](https://github.com/rrne/portly/releases/latest/download/Portly_0.2.1_universal.dmg)** — Intel·Apple Silicon 모두 지원
 2. `.dmg`를 열고 `Portly`를 `Applications`로 드래그
 3. 첫 실행 시 **우클릭 → 열기** (미서명 앱이라 macOS가 한 번 확인함)
 
