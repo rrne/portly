@@ -1,6 +1,6 @@
 // Rust 커맨드 호출 래퍼. 프론트는 여기만 통해 백엔드와 대화한다.
 import { invoke } from "@tauri-apps/api/core";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import { openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
 import type { PortProcess, ProcessDetail, ProcessMeta } from "./types";
 
 /** 포트를 기본 브라우저로 연다. (http://localhost:포트) */
@@ -28,6 +28,17 @@ export interface Config {
 
 /** 현재 사용자의 홈 경로. */
 export const homeDir = () => invoke<string>("home_dir");
+
+// ── 설치 위치 진단 ──
+export interface InstallStatus {
+  exePath: string;
+  location: "ok" | "dmg" | "translocated";
+}
+/** 앱이 DMG/translocation 경로에서 실행 중인지 확인한다(트레이 오작동 원인). */
+export const installStatus = () => invoke<InstallStatus>("install_status");
+
+/** Finder에서 해당 파일을 강조 표시한다(Applications로 옮기도록 안내용). */
+export const revealInFinder = (path: string) => revealItemInDir(path);
 
 export const loadConfig = () => invoke<Config>("load_config");
 export const saveConfig = (config: Config) =>

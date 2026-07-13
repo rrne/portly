@@ -206,6 +206,49 @@ body {
   word-break: break-word;
 }
 
+/* 잘못된 위치(DMG/translocation) 실행 경고 배너 */
+.install-warn {
+  margin: 8px;
+  padding: 10px 12px;
+  border: 0.5px solid rgba(217, 119, 6, 0.4);
+  background: rgba(217, 119, 6, 0.1);
+  border-radius: 8px;
+}
+
+.install-warn__title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+@media (prefers-color-scheme: dark) {
+  .install-warn__title {
+    color: #fbbf24;
+  }
+}
+
+.install-warn__body {
+  margin: 4px 0 8px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--fg);
+}
+
+.install-warn__btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border: 0.5px solid var(--border);
+  border-radius: 6px;
+  background: var(--header-bg);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.install-warn__btn:hover {
+  background: var(--bg);
+}
+
 /* 내 프로젝트 (등록+실행) */
 .projects {
   margin-bottom: 8px;

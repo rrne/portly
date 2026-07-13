@@ -114,6 +114,7 @@ pub fn run() {
             scan::process_detail,
             kill::kill_pid,
             config::home_dir,
+            config::install_status,
             config::load_config,
             config::save_config,
             detect::detect_command,

@@ -26,6 +26,49 @@ pub fn home_dir() -> Result<String, String> {
         .ok_or_else(|| "홈 디렉토리를 찾을 수 없음".to_string())
 }
 
+/// 실행 위치 진단. 메뉴바 앱이 DMG(`/Volumes/…`)나 App Translocation 경로에서
+/// 실행되면 트레이가 죽는 등 오작동하므로, 프론트가 경고를 띄우도록 상태를 알려준다.
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InstallStatus {
+    pub exe_path: String,
+    /// "ok" | "dmg" | "translocated" — ok가 아니면 프론트가 이동 안내를 띄운다.
+    pub location: String,
+}
+
+#[tauri::command]
+pub fn install_status() -> InstallStatus {
+    let exe = std::env::current_exe()
+        .map(|p| p.to_string_lossy().to_string())
+        .unwrap_or_default();
+
+    // 디버그 빌드에서만: 배너 UI 검증용 강제 오버라이드(PORTLY_FORCE_LOCATION=dmg 등).
+    #[cfg(debug_assertions)]
+    if let Ok(forced) = std::env::var("PORTLY_FORCE_LOCATION") {
+        return InstallStatus {
+            exe_path: exe,
+            location: forced,
+        };
+    }
+
+    // DMG 마운트본 직접 실행: 읽기전용이라 config 저장 실패 + 언마운트 시 크래시.
+    let location = if exe.starts_with("/Volumes/") {
+        "dmg"
+    // Gatekeeper App Translocation: quarantine된 앱을 무작위 읽기전용 경로로 옮겨 실행.
+    // /private/var/folders/…/AppTranslocation/…/d/… 형태.
+    } else if exe.contains("/AppTranslocation/") {
+        "translocated"
+    } else {
+        "ok"
+    }
+    .to_string();
+
+    InstallStatus {
+        exe_path: exe,
+        location,
+    }
+}
+
 #[tauri::command]
 pub fn load_config() -> Result<Config, String> {
     let path = config_path()?;

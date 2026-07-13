@@ -2,12 +2,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   homeDir,
+  installStatus,
   killPid,
   loadConfig,
   openPort,
   processMeta,
+  revealInFinder,
   saveConfig,
   scanPorts,
+  type InstallStatus,
 } from "./api";
 import { groupAll, guessMe, riskOf, type Risk } from "./grouping";
 import { toFriendly } from "./friendly";
@@ -32,6 +35,9 @@ function App() {
   // 필터 기준: 홈 경로 + 사용자가 지정한 프로젝트 루트들
   const [home, setHome] = useState("");
   const [roots, setRoots] = useState<string[]>([]);
+
+  // 실행 위치(DMG/translocation이면 트레이가 죽어 무반응 → 이동 안내)
+  const [install, setInstall] = useState<InstallStatus | null>(null);
 
   // OS 다이얼로그(폴더 선택)가 열려 있는 동안엔 "포커스 잃으면 hide"를 억제한다.
   // (다이얼로그가 포커스를 가져가면 팝오버가 숨어버려 다이얼로그까지 닫히는 충돌 방지)
@@ -70,6 +76,9 @@ function App() {
       .catch(() => {});
     loadConfig()
       .then((c) => setRoots(c.projectRoots ?? []))
+      .catch(() => {});
+    installStatus()
+      .then(setInstall)
       .catch(() => {});
   }, []);
 
@@ -172,6 +181,26 @@ function App() {
           ⚙
         </button>
       </header>
+
+      {install && install.location !== "ok" && (
+        <div className="install-warn">
+          <div className="install-warn__title">
+            ⚠️ 잘못된 위치에서 실행 중
+          </div>
+          <p className="install-warn__body">
+            {install.location === "dmg"
+              ? "지금 DMG(디스크 이미지) 안에서 실행 중입니다. 이러면 메뉴바 아이콘이 반응하지 않을 수 있어요."
+              : "macOS 보안(Gatekeeper)이 앱을 임시 위치로 옮겨 실행 중입니다. 메뉴바 아이콘이 반응하지 않을 수 있어요."}{" "}
+            <b>응용 프로그램(Applications) 폴더로 옮긴 뒤</b> 다시 실행하세요.
+          </p>
+          <button
+            className="install-warn__btn"
+            onClick={() => revealInFinder(install.exePath)}
+          >
+            Finder에서 위치 열기
+          </button>
+        </div>
+      )}
 
       {showSettings && (
         <Settings
