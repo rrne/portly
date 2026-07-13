@@ -5,8 +5,8 @@
 떠 있는 서버를 클릭 한 번에 종료하고, 등록해둔 프로젝트는 ▶ 버튼으로 바로 실행합니다. 터미널에서 `lsof`/`kill` 치던 일을 메뉴바에서.
 
 <p align="center">
-  <a href="https://github.com/rrne/portly/releases/latest/download/Portly_0.2.1_universal.dmg">
-    <img src="https://img.shields.io/badge/⬇%20Download-Portly%20v0.2.1%20(.dmg)-2ea44f?style=for-the-badge" alt="Download Portly">
+  <a href="https://github.com/rrne/portly/releases/latest/download/Portly_0.2.2_universal.dmg">
+    <img src="https://img.shields.io/badge/⬇%20Download-Portly%20v0.2.2%20(.dmg)-2ea44f?style=for-the-badge" alt="Download Portly">
   </a>
 </p>
 
@@ -30,9 +30,9 @@
 
 ### 다운로드 (권장)
 
-1. **[⬇ Portly v0.2.1 다운로드 (.dmg)](https://github.com/rrne/portly/releases/latest/download/Portly_0.2.1_universal.dmg)** — Intel·Apple Silicon 모두 지원
-2. `.dmg`를 열고 `Portly`를 `Applications`로 드래그
-3. 첫 실행 시 **우클릭 → 열기** (미서명 앱이라 macOS가 한 번 확인함)
+1. **[⬇ Portly v0.2.2 다운로드 (.dmg)](https://github.com/rrne/portly/releases/latest/download/Portly_0.2.2_universal.dmg)** — Intel·Apple Silicon 모두 지원
+2. `.dmg`를 열고 `Portly`를 **반드시 `Applications`로 드래그** (DMG 안에서 바로 실행하면 메뉴바 아이콘이 안 눌립니다 — 디스크 이미지는 읽기 전용이라 앱이 제대로 동작하지 않아요)
+3. `Applications`의 `Portly`를 첫 실행 시 **우클릭 → 열기** (미서명 앱이라 macOS가 한 번 확인함)
 
 > ⚠️ **메뉴바에 아이콘이 안 보이면?** macOS 노치 맥북은 메뉴바가 꽉 차면 아이콘을 숨깁니다. 다른 메뉴바 앱을 정리하거나, 라이브 액티비티(예: 노션 녹음)를 끄면 나타납니다.
 
